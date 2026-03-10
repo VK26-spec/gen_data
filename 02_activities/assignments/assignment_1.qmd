@@ -19,28 +19,32 @@ Before fitting any models, it is essential to understand the data. Use R or bash
 
 (i) Read the .fam file. How many samples does the dataset contain?
 
-```         
-# Your answer here...
+```{bash}         
+wc -l < ../data/gwa.qc.A1.fam
+#The number of samples is 4000.
 ```
 
 (ii) What is the 'variable type' of the response variable (i.e.Continuous or binary)?
 
-```         
-# Your answer here...
+``` {bash}    
+head ../data/gwa.qc.A1.fam
+# The variable type is continuous.
 ```
 
 (iii) Read the .bim file. How many SNPs does the dataset contain?
 
-```         
-# Your answer here...
+```{bash}         
+wc -l < ../data/gwa.qc.A1.bim
+# The number of SNPs in the dataset is 101083
 ```
 
 #### Question 2: Allele Frequency Estimation
 
 (i) Load the genotype matrix for SNPs rs1861, rs3813199, rs3128342, and rs11804831 using additive coding. What are the allele frequencies (AFs) for these four SNPs?
 
-```         
-# Your code here...
+```{bash} 
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --freq --out ./02_activities/data/gwa_qc_A1_freq
+#
 ```
 
 (ii) What are the minor allele frequencies (MAFs) for these four SNPs?
