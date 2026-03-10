@@ -239,14 +239,13 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 # Exercise
 
-- **Autosomal recessive disorder** $\rightarrow$ affected = homozygous recessive (aa)
-- Under HWE, $q^2=$ Frequency of affected individuals $=0.01$ $\rightarrow q=\sqrt{0.01}=0.1$.
-- Frequency of normal allele $(\mathrm{A})=p=1-q=0.9$
+- **Autosomal recessive disorder** $\rightarrow$ affected = homozygous recessive (AA)
+- Under HWE, $p^2=$ Frequency of affected individuals $=0.01$ $\rightarrow p=\sqrt{0.01}=0.1$.
+- Frequency of normal allele $(\mathrm{a})=q=1-p=0.9$
 - Genotype distribution under HWE:
-  - Homozygous normal (AA): $p^2=0.81$
-  - Heterozygous carriers (Aa): $2 p q=2 \times 0.9 \times 0.1=0.18$
-  - Homozygous sickle cell (aa): $q^2=0.01$
-
+  - Homozygous sickle cell (AA): $p^2=0.01$
+  - Heterozygous carriers (Aa): $2 p q=2 \times 0.1 \times 0.9=0.18$
+  - Homozygous normal (aa): $q^2=0.81$
 ---
 
 
@@ -254,9 +253,9 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 - |    Genotypes        | AA                     | Aa /aA   | aa |  Total |
   |------------|------------------------|-------|-------|-------|
-  | **Observed counts** | 189               | 89 | 9| 287  |
+  | **Observed counts** | 9               | 89 | 189| 287  |
   | **Expected counts** |  | | |287|
-  | **Expected freq.** |  0.81| 0.18| 0.01  | 1|
+  | **Expected freq.** |  0.01| 0.18| 0.81  | 1|
 
 - $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i} \sim \chi^2_{(1)}$ under $H_{0}$.
 
@@ -266,12 +265,13 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 
 - |    Genotypes        | AA                     | Aa /aA   | aa |  Total |
   |------------|------------------------|-------|-------|-------|
-  | **Observed counts** | 189               | 89 | 9| 287  |
-  | **Expected counts** |  $0.81×287 \approx 232.5$ | $0.18×287 \approx 51.7$| $0.01 \approx 287 \approx 2.9$ |287|
-  | **Expected freq.** |  0.81| 0.18| 0.01  | 1|
+  | **Observed counts** | 9               | 89 | 189| 287  |
+  | **Expected counts** |  $0.01×287 \approx 2.9$ | $0.18×287 \approx 51.7$| $0.81×287 \approx 232.5$ |287|
+  | **Expected freq.** |  0.01| 0.18| 0.81  | 1|
 
-- $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i}= \frac{(189-232.5)^2}{232.5}+\frac{(89-51.7)^2}{51.7}+\frac{(9-2.9)^2}{2.9}=47.88$.
+- $T=\sum^{3}_{i=1} \frac{\left(O_i-E_i\right)^2}{E_i}= \frac{(89-51.7)^2}{51.7}+\frac{(9-2.9)^2}{2.9}+\frac{(189-232.5)^2}{232.5}=47.88$.
 - P-value = $4.53×10^{−12}$; reject HWE. 
+
 
 ---
 
@@ -293,12 +293,12 @@ $𝑃(𝐴𝐴)=p^2$, $𝑃(𝐴𝑎)=2𝑝𝑞$, $𝑃(𝑎𝑎)=𝑞^2$.
 - Each stratum $k$ has its own allele frequency $p_{k}$ and stratum frequency $s_k$.
 - Assumes HWE holds within each stratum.
 
-- |   Stratum       | S | AA | Aa |  aa |
-  |------------|-------|-------|-------|-------|
-  | 1 | $s_{1}$ | $p_{1}$ | $p^2_{1}$| $2p_{1}q_{1}$  | $q^2_{1}$ |
-  | 2 | $s_{2}$ | $p_{2}$ | $p^2_{2}$| $2p_{2}q_{2}$  | $q^2_{2}$ |
-  | ... | ... | ... | ... | ...  | ... |
-  | K | $s_{K}$ | $p_{K}$ | $p^2_{K}$| $2p_{K}q_{K}$  | $q^2_{K}$ |
+- |            | Stratum       | S | AA | Aa |  aa |
+  |------------|-------|-------|-------|-------|-------|
+  | 1 | $s_{1}$ | $p_{1}$ | $p^2_{1}$| $2p_{1}q_{1}$| $q^2_{1}$ |
+  | 2 | $s_{2}$ | $p_{2}$ | $p^2_{2}$| $2p_{2}q_{2}$| $q^2_{2}$ |
+  | ... | ... | ... | ... | ... | ... |
+  | K | $s_{K}$ | $p_{K}$ | $p^2_{K}$| $2p_{K}q_{K}$| $q^2_{K}$ |
   
 
 ---
