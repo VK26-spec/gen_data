@@ -45,14 +45,28 @@ wc -l < ./02_activities/data/gwa.qc.A1.bim
 ```{bash} 
 printf "%s\n" rs1861 rs3813199 rs3128342 rs11804831 > ./02_activities/data/snplist.txt
 
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --out ./02_activities/data/gwa_qc_A1_freq
 
+```
+```{r,message=FALSE, warning=FALSE}
+library(data.table)
+freq <- fread("gen_data/02_activities/data/gwa_qc_A1_freq.afreq")  # columns include FID, IID, and SNP genotype
+head(freq)
+#rs3813199 AF is 0.0569126
+#rs11804831 AF is 0.154341
+#rs3128342 AF is 0.304121
+#rs1861 AF is 0.0539859
 ```
 
 (ii) What are the minor allele frequencies (MAFs) for these four SNPs?
 
 ```{bash}       
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --out ./02_activities/data/gwa_qc_A1_freq
-head ./02_activities/data/gwa_qc_A1_freq.afreq
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --maf 0.5 --out ./02_activities/data/gwa_qc_A1_maf
+```
+```{r,message=FALSE, warning=FALSE}
+freq <- fread("gen_data/02_activities/data/gwa_qc_A1_maf.afreq")
+head(freq)
+
 #rs3813199 MAF is 0.0569126
 #rs11804831 MAF is 0.154341
 #rs3128342 MAF is 0.304121
@@ -63,22 +77,46 @@ head ./02_activities/data/gwa_qc_A1_freq.afreq
 
 (i) Conduct the Hardy–Weinberg Equilibrium (HWE) test for all SNPs in the .bim file. Then, load the file containing the HWE p-value results and display the first few rows of the resulting data frame.
 
-```         
-# Your code here...
+```{bash}         
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --hardy --out ./02_activities/data/gwa_qc_A1_hwe
+```
+```{r,message=FALSE, warning=FALSE}
+# View HWE results
+hwe <- fread("gen_data/02_activities/data/gwa_qc_A1_hwe.hardy")
+head(hwe)
 ```
 
 (ii) What are the HWE p-values for SNPs rs1861, rs3813199, rs3128342, and rs11804831?
 
-```         
-# Your code here...
+```{bash}
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --hardy --out ./02_activities/data/gwa_qc_A1_subset_hwe
+head ./02_activities/data/gwa_qc_A1_subset_hwe.hardy
+
+#rs3813199 p-value is 1
+#rs11804831 p-value is 0.113354
+#rs3128342 p-value is 0.330273
+#rs1861 p-value is 0.274719
 ```
 
 #### Question 4: Genetic Association Test
 
 (i) Conduct a linear regression to test the association between SNP rs1861 and the phenotype. What is the p-value?
+```{bash}       
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --recode A --out ./02_activities/data/geno.additive
+```
+```{r,message=FALSE, warning=FALSE}
+# Load genotype data
+geno_subset <- fread("gen_data/02_activities/data/geno.additive.raw")
+geno_subset=na.omit(geno_subset)
+geno_subset$PHENOTYPE=geno_subset$PHENOTYPE-1
+freq[freq$ID=='rs1861',]
+# Fit logistic regression model
+model <- lm(PHENOTYPE ~ rs1861_C, data = geno_subset)
 
-```         
-# Your code here...
+# View model summary
+summary(model)
+table(geno_subset$rs1861_C)
+
 ```
 
 (ii) How would you interpret the beta coefficient from this regression?
@@ -91,6 +129,7 @@ head ./02_activities/data/gwa_qc_A1_freq.afreq
 
 ```         
 # Your code here...
+#Without count
 ```
 
 (iv) Convert the genotype coding for rs1861 to recessive coding.
