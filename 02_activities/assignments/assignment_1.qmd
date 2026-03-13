@@ -20,21 +20,21 @@ Before fitting any models, it is essential to understand the data. Use R or bash
 (i) Read the .fam file. How many samples does the dataset contain?
 
 ```{bash}         
-wc -l < ./02_activities/data/gwa.qc.A1.fam
+wc -l < ./gen_data/02_activities/data/gwa.qc.A1.fam
 #The number of samples is 4000.
 ```
 
 (ii) What is the 'variable type' of the response variable (i.e.Continuous or binary)?
 
 ``` {bash}    
-head ./02_activities/data/gwa.qc.A1.fam
+head ./gen_data/02_activities/data/gwa.qc.A1.fam
 # The variable type is continuous.
 ```
 
 (iii) Read the .bim file. How many SNPs does the dataset contain?
 
 ```{bash}         
-wc -l < ./02_activities/data/gwa.qc.A1.bim
+wc -l < ./gen_data/02_activities/data/gwa.qc.A1.bim
 # The number of SNPs in the dataset is 101083
 ```
 
@@ -102,7 +102,7 @@ head ./02_activities/data/gwa_qc_A1_subset_hwe.hardy
 
 (i) Conduct a linear regression to test the association between SNP rs1861 and the phenotype. What is the p-value?
 ```{bash}       
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --recode A --out ./02_activities/data/geno.additive
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --recode A --out ./gen_data/02_activities/data/geno.additive
 ```
 ```{r,message=FALSE, warning=FALSE}
 # Load genotype data
@@ -111,49 +111,148 @@ geno_subset=na.omit(geno_subset)
 geno_subset$PHENOTYPE=geno_subset$PHENOTYPE-1
 freq[freq$ID=='rs1861',]
 # Fit logistic regression model
-model <- lm(PHENOTYPE ~ rs1861_C, data = geno_subset)
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset, family = "gaussian")
 
 # View model summary
 summary(model)
-table(geno_subset$rs1861_C)
+
+#The p-value < 2.2e-16
 
 ```
 
 (ii) How would you interpret the beta coefficient from this regression?
 
 ```         
-# Your answer here...
+The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that each additional copy of the C allele is almost 1 to 1 linearly associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
+
 ```
 
 (iii) Plot the scatterplot of phenotype versus the genotype of SNP rs1861. Add the regression line to the plot.
 
-```         
-# Your code here...
-#Without count
+``` {r,message=FALSE, warning=FALSE}        
+library(ggplot2)
+library(dplyr)
+# Create a new data frame containing a sequence of genotype values
+ geno_range <- data.frame(
+   rs1861_C = seq(0, 2, length.out = 100)
+ )
+# Use the fitted logistic regression model to predict phenotype probability
+# for each genotype value in geno_range
+ geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
+
+# Start from the observed genotype dataset
+count_data <- geno_subset %>%
+# Round phenotype values to the nearest integer
+  mutate(PHENOTYPE = round(PHENOTYPE)) %>%  
+# Remove rows with missing genotype or missing phenotype
+  filter(!is.na(rs1861_C), !is.na(PHENOTYPE)) %>%
+ # Group data by genotype value and phenotype category 
+  group_by(rs1861_C, PHENOTYPE) %>%
+# Count how many observations fall into each genotype-phenotype combination
+  summarise(count = n(), .groups = "drop")
+
+# Start building the plot
+p1=ggplot() +
+# Add points showing observed genotype-phenotype combinations
+  geom_point(
+    # Use the summarized count_data for the points
+    data = count_data,
+    # Map genotype to x-axis, phenotype to y-axis, and count to point size
+    aes(x = rs1861_C, y = PHENOTYPE, size = count),
+    color = "blue"
+  ) +
+  # Add a regression line showing predicted probability across genotype values
+  geom_line(# Use the prediction data frame for the line
+    data = geno_range,
+    aes(x = rs1861_C, y = predicted_prob),
+    color = "red",
+    # Set line thickness
+    size = 1.2
+  ) +
+  # Control the size range of the points
+  scale_size_continuous(range = c(2, 10)) +
+  labs(
+    title = "Linear Regression: PHENOTYPE ~ Genotype",
+    x = "Genotype (0/1/2)",
+    y = "Phenotype ",
+    size = "Count"
+  ) +
+  # Restrict the visible x- and y-axis range
+  coord_cartesian(xlim = c(-0.5, 2.5), ylim = c(-0.1, 1.1)) +
+   # Apply a minimal theme for a clean appearance
+  theme_minimal()
+
+print(p1)
+ggsave("gen_data/02_activities/data/p1_plot.png", plot = p1, width = 7, height = 5, dpi = 300)
 ```
 
 (iv) Convert the genotype coding for rs1861 to recessive coding.
 
-```         
-# Your code here...
+```{r}        
+geno_subset_dom <- geno_subset  # make a copy
+geno_subset_dom[, 7:ncol(geno_subset_dom)] <- as.data.frame(
+  lapply(geno_subset[, 7:ncol(geno_subset)], function(x) ifelse(x == 2, 1, 0))
+)
 ```
 
 (v) Conduct a linear regression to test the association between the recessive-coded rs1861 and the phenotype. What is the p-value?
 
-```         
-# Your code here...
+``` {r,message=FALSE, warning=FALSE}           
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = "gaussian")
+summary(model)
+#The p-value < 2.2e-16
 ```
 
 (vi) Plot the scatterplot of phenotype versus the recessive-coded genotype of rs1861. Add the regression line to the plot.
 
-```         
-# Your code here...
+```{r,message=FALSE, warning=FALSE}     
+# Fit logistic regression model
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = binomial)
+summary(model)
+
+geno_range <- data.frame(
+   rs1861_C = seq(0, 1, length.out = 100)
+ )
+ geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
+
+count_data <- geno_subset_dom %>%
+  mutate(PHENOTYPE = round(PHENOTYPE)) %>%
+  filter(!is.na(rs1861_C), !is.na(PHENOTYPE)) %>%
+  group_by(rs1861_C, PHENOTYPE) %>%
+  summarise(count = n(), .groups = "drop")
+
+print(count_data)
+
+p2=ggplot() +
+  geom_point(
+    data = count_data,
+    aes(x = rs1861_C, y = PHENOTYPE, size = count),
+    color = "blue"
+  ) +
+  geom_line(
+    data = geno_range,
+    aes(x = rs1861_C, y = predicted_prob),
+    color = "red",
+    size = 1.2
+  ) +
+  scale_size_continuous(range = c(2, 10)) +
+  labs(
+    title = "Logistic Regression: PHENOTYPE ~ Genotype",
+    x = "Genotype (0/1)",
+    y = "Phenotype ",
+    size = "Count"
+  ) +
+  coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(-0.1, 1.1)) +
+  theme_minimal()
+
+print(p2)
+ggsave("./gen_data/02_activities/data/p2_plot.png", plot = p2, width = 7, height = 5, dpi = 300)
 ```
 
 (vii) Which model fits better? Justify your answer.
 
 ```         
-# Your answer here...
+The AIC is 11000 under the recessive model and 10988 under the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
 ```
 
 ### Criteria
