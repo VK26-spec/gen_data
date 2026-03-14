@@ -1,6 +1,7 @@
 ---
 title: "Assignment #1"
 format: html
+execute-dir: project
 ---
 
 ## Assignment 1
@@ -12,7 +13,18 @@ We will go through comparable code and concepts in the live learning session. If
 Please bring questions that you cannot work out on your own to office hours, work periods or share with your peers on Slack. We will work with you through the issue.
 
 You will need to install PLINK and run the analyses. Please follow the OS-specific setup guide in [`SETUP.md`](../../SETUP.md). PLINK is a free, open-source whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner.
-
+```{r, setup, include=FALSE}
+# Set up a consistent path for all chunks of code
+knitr::opts_knit$set(root.dir = normalizePath("../../../"))
+getwd()
+```
+```{r, message=FALSE, warning=FALSE, results='hide'}
+library(data.table)
+library(ggplot2)
+library(seqminer)
+library(HardyWeinberg)
+library(dplyr)
+```
 #### Question 1: Data inspection
 
 Before fitting any models, it is essential to understand the data. Use R or bash code to answer the following questions about the `gwa.qc.A1.fam`, `gwa.qc.A1.bim`, and `gwa.qc.A1.bed` files, available at the following Google Drive link: <https://drive.google.com/drive/folders/11meVqGCY5yAyI1fh-fAlMEXQt0VmRGuz?usp=drive_link>. Please download all three files from this link and place them in `02_activities/data/`.
@@ -43,9 +55,9 @@ wc -l < ./gen_data/02_activities/data/gwa.qc.A1.bim
 (i) Load the genotype matrix for SNPs rs1861, rs3813199, rs3128342, and rs11804831 using additive coding. What are the allele frequencies (AFs) for these four SNPs?
 
 ```{bash} 
-printf "%s\n" rs1861 rs3813199 rs3128342 rs11804831 > ./02_activities/data/snplist.txt
+printf "%s\n" rs1861 rs3813199 rs3128342 rs11804831 > ./gen_data/02_activities/data/snplist.txt
 
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --out ./02_activities/data/gwa_qc_A1_freq
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --freq --out ./gen_data/02_activities/data/gwa_qc_A1_freq
 
 ```
 ```{r,message=FALSE, warning=FALSE}
@@ -61,7 +73,7 @@ head(freq)
 (ii) What are the minor allele frequencies (MAFs) for these four SNPs?
 
 ```{bash}       
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --maf 0.5 --out ./02_activities/data/gwa_qc_A1_maf
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --freq --maf 0.5 --out ./gen_data/02_activities/data/gwa_qc_A1_maf
 ```
 ```{r,message=FALSE, warning=FALSE}
 freq <- fread("gen_data/02_activities/data/gwa_qc_A1_maf.afreq")
@@ -78,7 +90,7 @@ head(freq)
 (i) Conduct the Hardy–Weinberg Equilibrium (HWE) test for all SNPs in the .bim file. Then, load the file containing the HWE p-value results and display the first few rows of the resulting data frame.
 
 ```{bash}         
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --hardy --out ./02_activities/data/gwa_qc_A1_hwe
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --hardy --out ./gen_data/02_activities/data/gwa_qc_A1_hwe
 ```
 ```{r,message=FALSE, warning=FALSE}
 # View HWE results
@@ -89,8 +101,8 @@ head(hwe)
 (ii) What are the HWE p-values for SNPs rs1861, rs3813199, rs3128342, and rs11804831?
 
 ```{bash}
-plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --hardy --out ./02_activities/data/gwa_qc_A1_subset_hwe
-head ./02_activities/data/gwa_qc_A1_subset_hwe.hardy
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --hardy --out ./gen_data/02_activities/data/gwa_qc_A1_subset_hwe
+head ./gen_data/02_activities/data/gwa_qc_A1_subset_hwe.hardy
 
 #rs3813199 p-value is 1
 #rs11804831 p-value is 0.113354
@@ -130,8 +142,6 @@ The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that
 (iii) Plot the scatterplot of phenotype versus the genotype of SNP rs1861. Add the regression line to the plot.
 
 ``` {r,message=FALSE, warning=FALSE}        
-library(ggplot2)
-library(dplyr)
 # Create a new data frame containing a sequence of genotype values
  geno_range <- data.frame(
    rs1861_C = seq(0, 2, length.out = 100)
@@ -207,7 +217,7 @@ summary(model)
 
 ```{r,message=FALSE, warning=FALSE}     
 # Fit logistic regression model
-model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = binomial)
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = "gaussian")
 summary(model)
 
 geno_range <- data.frame(
