@@ -64,10 +64,10 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_a
 library(data.table)
 freq <- fread("gen_data/02_activities/data/gwa_qc_A1_freq.afreq")  # columns include FID, IID, and SNP genotype
 head(freq)
-#rs3813199 AF is 0.0569126
-#rs11804831 AF is 0.154341
-#rs3128342 AF is 0.304121
-#rs1861 AF is 0.0539859
+#rs3813199 alt AF is 0.0569126. The ref AF is 0.943087.
+#rs11804831 AF is 0.154341. The ref AF is 0.845659.
+#rs3128342 AF is 0.304121. The ref AF is 0.694879.
+#rs1861 AF is 0.0539859. The ref AF is 0.946014.
 ```
 
 (ii) What are the minor allele frequencies (MAFs) for these four SNPs?
@@ -120,8 +120,7 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_a
 # Load genotype data
 geno_subset <- fread("gen_data/02_activities/data/geno.additive.raw")
 geno_subset=na.omit(geno_subset)
-geno_subset$PHENOTYPE=geno_subset$PHENOTYPE-1
-freq[freq$ID=='rs1861',]
+geno_subset[geno_subset$ID=='rs1861',]
 # Fit logistic regression model
 model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset, family = "gaussian")
 
@@ -135,7 +134,7 @@ summary(model)
 (ii) How would you interpret the beta coefficient from this regression?
 
 ```         
-The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that each additional copy of the C allele is almost 1 to 1 linearly associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
+The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that each additional copy of the C allele is almost 1 to 1 linearly associated with increased odds of the expected phenotype. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
 
 ```
 
@@ -150,27 +149,10 @@ The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that
 # for each genotype value in geno_range
  geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
 
-# Start from the observed genotype dataset
-count_data <- geno_subset %>%
-# Round phenotype values to the nearest integer
-  mutate(PHENOTYPE = round(PHENOTYPE)) %>%  
-# Remove rows with missing genotype or missing phenotype
-  filter(!is.na(rs1861_C), !is.na(PHENOTYPE)) %>%
- # Group data by genotype value and phenotype category 
-  group_by(rs1861_C, PHENOTYPE) %>%
-# Count how many observations fall into each genotype-phenotype combination
-  summarise(count = n(), .groups = "drop")
-
 # Start building the plot
-p1=ggplot() +
+p1=ggplot(geno_subset, aes(x= rs1861_C, y = PHENOTYPE)) +
 # Add points showing observed genotype-phenotype combinations
-  geom_point(
-    # Use the summarized count_data for the points
-    data = count_data,
-    # Map genotype to x-axis, phenotype to y-axis, and count to point size
-    aes(x = rs1861_C, y = PHENOTYPE, size = count),
-    color = "blue"
-  ) +
+  geom_point() +
   # Add a regression line showing predicted probability across genotype values
   geom_line(# Use the prediction data frame for the line
     data = geno_range,
@@ -184,11 +166,8 @@ p1=ggplot() +
   labs(
     title = "Linear Regression: PHENOTYPE ~ Genotype",
     x = "Genotype (0/1/2)",
-    y = "Phenotype ",
-    size = "Count"
+    y = "Phenotype "
   ) +
-  # Restrict the visible x- and y-axis range
-  coord_cartesian(xlim = c(-0.5, 2.5), ylim = c(-0.1, 1.1)) +
    # Apply a minimal theme for a clean appearance
   theme_minimal()
 
@@ -199,8 +178,8 @@ ggsave("gen_data/02_activities/data/p1_plot.png", plot = p1, width = 7, height =
 (iv) Convert the genotype coding for rs1861 to recessive coding.
 
 ```{r}        
-geno_subset_dom <- geno_subset  # make a copy
-geno_subset_dom[, 7:ncol(geno_subset_dom)] <- as.data.frame(
+geno_subset_rec <- geno_subset  # make a copy
+geno_subset_rec[, 7:ncol(geno_subset_rec)] <- as.data.frame(
   lapply(geno_subset[, 7:ncol(geno_subset)], function(x) ifelse(x == 2, 1, 0))
 )
 ```
@@ -208,7 +187,7 @@ geno_subset_dom[, 7:ncol(geno_subset_dom)] <- as.data.frame(
 (v) Conduct a linear regression to test the association between the recessive-coded rs1861 and the phenotype. What is the p-value?
 
 ``` {r,message=FALSE, warning=FALSE}           
-model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = "gaussian")
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_rec, family = "gaussian")
 summary(model)
 #The p-value < 2.2e-16
 ```
@@ -217,7 +196,7 @@ summary(model)
 
 ```{r,message=FALSE, warning=FALSE}     
 # Fit logistic regression model
-model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_dom, family = "gaussian")
+model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset_rec, family = "gaussian")
 summary(model)
 
 geno_range <- data.frame(
@@ -225,20 +204,8 @@ geno_range <- data.frame(
  )
  geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
 
-count_data <- geno_subset_dom %>%
-  mutate(PHENOTYPE = round(PHENOTYPE)) %>%
-  filter(!is.na(rs1861_C), !is.na(PHENOTYPE)) %>%
-  group_by(rs1861_C, PHENOTYPE) %>%
-  summarise(count = n(), .groups = "drop")
-
-print(count_data)
-
-p2=ggplot() +
-  geom_point(
-    data = count_data,
-    aes(x = rs1861_C, y = PHENOTYPE, size = count),
-    color = "blue"
-  ) +
+p2=ggplot(geno_subset_rec, aes(x = rs1861_C, y = PHENOTYPE)) +
+  geom_point() +
   geom_line(
     data = geno_range,
     aes(x = rs1861_C, y = predicted_prob),
@@ -249,10 +216,7 @@ p2=ggplot() +
   labs(
     title = "Logistic Regression: PHENOTYPE ~ Genotype",
     x = "Genotype (0/1)",
-    y = "Phenotype ",
-    size = "Count"
-  ) +
-  coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(-0.1, 1.1)) +
+    y = "Phenotype ") +
   theme_minimal()
 
 print(p2)
