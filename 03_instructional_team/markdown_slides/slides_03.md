@@ -155,7 +155,7 @@ $$
 
 ----
 
-# Exercise
+# *Exercise
 
 - Can express recurrence risk ratio as a function of the covariance between two relatives' phenotypes
 
@@ -167,9 +167,9 @@ $$
 
 ----
 
-# Recurrence Risk Ratio and Disease Model
+# *Recurrence Risk Ratio and Disease Model
 
-- Under a simple disease model (i.e. c), the recurrence risk ratio can be readily computed once the penetrance functions and allele frequency are specified.
+- Under a simple disease model, the recurrence risk ratio can be readily computed once the penetrance functions and allele frequency are specified.
 
 - Additional technical details for calculating the recurrence risk ratio under a simple disease model are provided at the end of the lecture.
 
@@ -255,7 +255,7 @@ $$
 
 ---
 
-# Heritability - General Model
+# *Heritability - General Model
 
 - Let's consider a more general model. 
 - We code $G=0,1$ and 2 'additively', but use the following **2 d.f. model**.
@@ -276,7 +276,7 @@ $$
   
 ---
 
-# Heritability - General Model
+# *Heritability - General Model
 
 - $Y=\mu+a G+d l(G=1)+e.$
   $$\operatorname{Var}(Y)=a^2 \operatorname{Var}(G)+d^2 \operatorname{Var}(I(G=1))+2 \operatorname{adCov}(G, I(G=1))+\sigma^2.$$
@@ -297,7 +297,7 @@ $$
 
 ---
 
-# Derivations
+# *Derivations
 
 -  | $G$ | $I(G)$ | with Probability |
    | :---: | :---: | :---: |
@@ -314,7 +314,7 @@ $$\begin{gathered}E(G)=2 p(1-p)+2 p^2=2 p. \\ \operatorname{Var}(G)=E\left(G^2\r
 ----
 
 
-# Derivations
+# *Derivations
 
 -  | $G$ | $I(G)$ | with Probability |
    | :---: | :---: | :---: |
@@ -332,7 +332,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Derivations
+# *Derivations
 
 
 - $$\begin{aligned} V_G&=a^2 \operatorname{Var}(G)+d^2 \operatorname{Var}(I(G=1))+2 \operatorname{adCov}(G, I(G=1)) \\ &=a^2 2 p(1-p)+d^2\left(2 p(1-p)-(2 p(1-p))^2\right)+2 a d 2 p(1-p)(1-2 p) \\ &=2 p(1-p)\left(a^2+2 a d(1-2 p)+d^2(1-2 p(1-p))\right. \\ &=2 p(1-p)\left(a^2+2 a d(1-2 p)+d^2(1-2 p)^2\right) \\ &+2 p(1-p)\left(d^2\left(1-2 p(1-p)-d^2(1-2 p)^2\right)\right. \\ &=\frac{2 p(1-p)(a+d(1-2 p))^2+(2 p(1-p) d)^2}{V_A+V_D}. \end{aligned}$$
@@ -365,7 +365,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Derivations
+# *Derivations
 
 - Let's consider the normal additive model
   $$Y_1=\mu+a G_1+e_1, \quad Y_2=\mu+a G_2+e_2.$$
@@ -382,7 +382,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Derivations
+# *Derivations
 
 - Because $\operatorname{Var}\left(Y_1\right)=\operatorname{Var}\left(Y_2\right)$, so
   $$\operatorname{Var}(Y)=\sqrt{\operatorname{Var}\left(Y_1\right)} \sqrt{\operatorname{Var}\left(Y_2\right)}=V_Y.$$
@@ -395,7 +395,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Derivations
+# *Derivations
 
 - $Y_1=\mu+a G_1+e_1,\quad Y_2=\mu+a G_2+e_2.$
 
@@ -405,7 +405,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
   $$\operatorname{Cov}\left(Y_1, Y_2 \mid M Z\right)=a^2 \operatorname{Cov}\left(G_1, G_2 \mid M Z\right)+\operatorname{Cov}\left(e_1, e_2 \mid M Z\right)=\underline{V_A+\operatorname{Cov}\left(e_1, e_2 \mid M Z\right)}.$$
 ---
 
-# Derivations
+# *Derivations
 
 - What is $\operatorname{Cov}\left(G_1, G_2\right)$ for DZ twins (genetically they are siblings)?
   $$\operatorname{Cov}\left(G_1, G_2 \mid D Z\right)=p(1-p).$$
@@ -416,7 +416,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Derivations
+# *Derivations
 
 - It is reasonable to assume $\operatorname{Cov}\left(e_1, e_2 \mid M Z\right) \approx \operatorname{Cov}\left(e_1, e_2 \mid D Z\right)$, so
   $$\begin{aligned} \rho_{M Z}-\rho_{D Z}&=\operatorname{Corr}\left(Y_1, Y_2 \mid M Z\right)-\operatorname{Corr}\left(Y_1, Y_2 \mid D Z\right) \\ &=\frac{\operatorname{Cov}\left(Y_1, Y_2 \mid M Z\right)}{\sqrt{\operatorname{Var}\left(Y_1\right)} \sqrt{\operatorname{Var}\left(Y_2\right)}}-\frac{\operatorname{Cov}\left(Y_1, Y_2 \mid D Z\right)}{\sqrt{\operatorname{Var}\left(Y_1\right)} \sqrt{\operatorname{Var}\left(Y_2\right)}} \\ &=\frac{V_A+\operatorname{Cov}\left(e_1, e_2 \mid M Z\right)}{V_Y}-\frac{\frac{V_A}{2}+\operatorname{Cov}\left(e_1, e_2 \mid D Z\right)}{V_Y} \\ &=\frac{1}{2} \frac{V_A}{V_Y}=\frac{1}{2} h^2\end{aligned}$$
@@ -426,7 +426,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Details of $Cov(G_1,G_2)$ Calculation
+# *Details of $Cov(G_1,G_2)$ Calculation
 
 | (Unordered) genotype | $G_1 \cdot G_2=$ | with Probability |
 | :---: | :---: | :---: |
@@ -439,7 +439,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 ---
 
-# Details of $Cov(G_1,G_2)$ Calculation
+# *Details of $Cov(G_1,G_2)$ Calculation
 
 - $\operatorname{Cov}\left(G_1, G_2\right)=E\left(G_1 \cdot G_2\right)-E\left(G_1\right) E\left(G_2\right)=E\left(G_1 \cdot G_2\right)-(2 p)^2.$
 
@@ -471,7 +471,7 @@ $$\begin{gathered}\operatorname{Var}(I)=E\left(I^2\right)-(E(I))^2=2 p(1-p)-(2 p
 
 - Autosomal Dominant Disease: $A$ is the mutant allele and $a$ is the normal allele (i.e. $A$ is rare).
 
-$$ p(AA \mid \text { affected })=\frac{p^2}{p^2+2 p(1-p)^2}=\frac{p}{2-p} \approx \frac{p}{2}.$$
+$$ p(AA \mid \text { affected })=\frac{p^2_{A}}{p^2_{A}+2 p_{A}(1-p_{A})^2}=\frac{p_{A}}{2-p_{A}} \approx \frac{p_{A}}{2}.$$
 
 - Design: use a random sample of matings between affected (assumed to have genotype $Aa$) and unaffected individuals ( $aa$ ).
 
@@ -485,7 +485,7 @@ $$ p(AA \mid \text { affected })=\frac{p^2}{p^2+2 p(1-p)^2}=\frac{p}{2-p} \appro
 
 - Estimation: what is the segregation ratio $p$ ?
 
-- For autosomal dominant disease, an offspring of mating type $Aa \times AA$ has probability $p=1 / 2$ of being affected.
+- For autosomal dominant disease, an offspring of mating type $Aa \times aa$ has probability $p=1 / 2$ of being affected.
 
 - Hypothesis testing: can we reject the $H_0$ that $p=p_0=1 / 2$ ?
 
@@ -503,7 +503,7 @@ $$ p(AA \mid \text { affected })=\frac{p^2}{p^2+2 p(1-p)^2}=\frac{p}{2-p} \appro
 - MLE: $\hat{p}=\frac{n_{\text {Affected }}}{n}.$
 ---
 
-# Segregation Analysis - Autosomal Dominant Disease
+# *Segregation Analysis - Autosomal Dominant Disease
 
 - Hypothesis testing - Likelihood Ratio Test.
   $$
@@ -519,7 +519,7 @@ $$
 
 ---
 
-# Notes 
+# *Notes 
 
 #### Other tests:
 
@@ -536,7 +536,7 @@ $$
 
 ---
 
-# Notes
+# *Notes
 
 - A few notes on likelihood ration test and Pearson $\chi_r^2$ test.
 - The proof of $X=2 \ln \left\{\frac{L_{H_1}(\hat{\theta})}{L_{H_0}(\hat{\theta})}\right\} \approx \chi_r^2$ is based on the Taylor's expansion w.r.t. $\theta$.
@@ -548,7 +548,7 @@ $$
 
 ---
 
-# Segregation Analysis - Autosomal Recessive Disease
+# *Segregation Analysis - Autosomal Recessive Disease
 
 
 - **Uncertain genotype problem**: A specific mating type may not be selected on the basis of the phenotype of the parents:
@@ -560,7 +560,7 @@ $$
 
 ---
 
-# Segregation Analysis - Autosomal Recessive Disease
+# *Segregation Analysis - Autosomal Recessive Disease
 
 - **Example**: interested in the segregation ratio for mating type $d D \times d D$ (predicted to have $p=1 / 4$ under the autosomal recessive model).
   - For a pair of unaffected parents, three possible mating types:
@@ -570,7 +570,7 @@ $$
 
 ---
 
-# Segregation Analysis - Autosomal Recessive Disease
+# *Segregation Analysis - Autosomal Recessive Disease
 
 
 - **Problems of the above ascertainment procedure**
@@ -585,7 +585,7 @@ $$
 
 ----
 
-# Segregation Analysis - Autosomal Recessive Disease
+# *Segregation Analysis - Autosomal Recessive Disease
 
 - Statistical remedy: need to take into account of the "**incomplete selection**" of a mating type in segregation analysis. **Ascertainment procedure** should be clearly defined and accounted for (advanced stat gene topic).
   - Glidden and Liang (2002). Ascertainment adjustment in complex diseases. Genetic Epidemiology.
@@ -594,7 +594,7 @@ $$
 
 ---
 
-# Segregation Analysis - Beyond the Simple Model 
+# *Segregation Analysis - Beyond the Simple Model 
 
 - Interpretation of deviation from Mendelian segregation ratios.
   - More than one causal locus.
@@ -706,13 +706,13 @@ $$
 ---
 -->
 
-# Additional Details
+# *Additional Details
 
 - We present the technical details for calculating the recurrence risk ratio within a simple Mendelian recessive disease model.
 
 ---
 
-# P(Y, G) for Nuclear Families
+# *P(Y, G) for Nuclear Families
 
 - $(A$, $a)$: two alleles of a biallelic marker  
 - $G$ = \{$aa$, $aA$, $AA$\} with coding \(0, 1, 2\)  
@@ -727,7 +727,7 @@ $$
 
 ---
 
-# Joint Distribution of Y and G
+# *Joint Distribution of Y and G
 
 - The probability density for the offspring phenotypes and genotypes, and the parental genotypes is: 
   $$ f(y_1, y_2, x_1, x_2, g_1, g_2) = f(y_1|x_1) f(y_2|x_2) f(x_1|g_1,g_2) f(x_2|g_1,g_2) f(g_1) f(g_2).$$
@@ -740,7 +740,7 @@ $$
 
 ---
 
-# Joint Distribution of Y and G
+# *Joint Distribution of Y and G
 
 -  For simplicity, we make the assumption of **phenotypic independence**.The phenotypes of individuals in the pedigree are independent of each other, given their genotypes.
      $$f\left(y_1, y_2 \mid x_1, x_2, g_1, g_2\right)=f\left(y_1 \mid x_1\right) f\left(y_2 \mid x_2\right).$$
@@ -754,7 +754,7 @@ $$
 
 ---
 
-# Recurrence Risk Ratio and Disease Model
+# *Recurrence Risk Ratio and Disease Model
 
 - ##### We can show that $P\left(Y_{\text {Sib of } Y}=1 \mid Y=1\right)>P(Y=1).$
 
@@ -769,13 +769,13 @@ $$
 
 ---
 
-# Recurrence Risk Ratio & Disease Model
+# *Recurrence Risk Ratio & Disease Model
 
 - $$\begin{aligned} P\left(Y_2=1 \mid Y_1=1\right)&=\frac{P\left(Y_1=1, Y_2=1\right)}{P\left(Y_1=1\right)} \\&=\frac{p^4+p^3(1-p)+\frac{1}{4} p^2(1-p)^2}{p^2}=p^2+p(1-p)+\frac{1}{4}(1-p)^2 \\&=p^2\left(1+\frac{(1+3 p)(1-p)}{4 p^2}\right)>p^2=P\left(Y_1=1\right).\end{aligned}$$
 
 ---
 
-# Recurrence risk ratio & Disease Model
+# *Recurrence risk ratio & Disease Model
 
 - $f_{0}=P(Y=1 \mid G=aa), f_{1}=P(Y=1 \mid G=Aa), f_{2}= P(Y=1 \mid G=AA).$ ($f_0=f_1=0$ and $f_2=1$).
 
@@ -787,7 +787,7 @@ $$\begin{aligned}K=P(Y=1)&=\sum_{x=0,1,2, \text { or } aa, aA, AA} P(Y=1, X=x)\\
 
 ---
 
-# Recurrence risk ratio & Disease Model
+# *Recurrence risk ratio & Disease Model
 
 - Numerator:
 $$\begin{aligned}P(Y_2=1,\;Y_1=1)&= \sum_{\substack{x_1,x_2,g_1,g_2\in\{0,1,2\}}}

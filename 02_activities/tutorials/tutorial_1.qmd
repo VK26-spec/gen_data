@@ -1,5 +1,5 @@
 ---
-title: "tutorial 1"
+title: "Tutorial 1"
 format: html
 editor: visual
 execute-dir: project
@@ -20,7 +20,7 @@ A PLINK binary dataset consists of three files:
 Please download the three files from the following Google Drive link and place them in `02_activities/data/`: <https://drive.google.com/drive/folders/1v-FbDqu95wdUje3foFXMdXrBjYEAJTB2?usp=drive_link>
 
 ```{r setup, include=FALSE}
-#knitr::opts_chunk$set(echo = TRUE)
+# Set up a consistent path for all chunks of code
 knitr::opts_knit$set(root.dir = normalizePath("../../"))
 ```
 
@@ -37,9 +37,8 @@ library(dplyr)
 Sample information file: IDs, sex, phenotype
 
 ```{bash}
-#pwd
+pwd
 head ./02_activities/data/gwa.qc.fam
-#head ../data/gwa.qc.fam
 ```
 
 | **Column Name** | **Description** |
@@ -62,8 +61,8 @@ head ./02_activities/data/gwa.qc.bim
 | **SNP** | SNP ID (e.g., rs number) |
 | **CM** | Genetic distance (usually 0) |
 | **BP** | Physical position in base pairs |
-| **A1** | PLINK's effect allele (the counted allele) |
-| **A2** | the other allele (reference/alternative allele depending on context) |
+| **A1** | PLINK's alternative allele |
+| **A2** | the other allele (reference allele; mostly major alleles) |
 
 ### 3. Understanding the .bed file
 
@@ -72,16 +71,16 @@ The .bed file stores encoded genotypes in a compact binary format. It is not hum
 Convert to readable format:
 
 ```{bash,results='hide',message=FALSE, warning=FALSE}
-plink2 --bfile ./02_activities/data/gwa.qc --recode A --out ./02_activities/data/gwa_qc_additive
+plink2 --bfile ./02_activities/data/gwa.qc --export A --out ./02_activities/data/gwa_qc_additive
 ```
 
 This creates a .raw file with dosage coding:
 
-0 = homozygous for A2
+0 = homozygous for A1
 
 1 = heterozygous
 
-2 = homozygous for A1
+2 = homozygous for A2 (REF alleles are counted by default)
 
 ```{r}
 # Load genotype data
@@ -149,13 +148,14 @@ head(freq)
 
 ```{bash,message=FALSE, warning=FALSE}
 # Create SNP list file with 4 example SNPs
+setopt interactivecomments
 printf "%s\n" rs1525873 rs2902663 rs343376 rs3813199 > ./02_activities/data/snplist.txt
 
 # Create sample list file with header + 3 samples
-#echo "FID IID" > ./02_activities/data/samplist.txt
-#echo "0 A2001" >> ./02_activities/data/samplist.txt
-#echo "2 A2003" >> ./02_activities/data/samplist.txt
-#echo "5 A2006" >> ./02_activities/data/samplist.txt
+# echo "FID IID" > ./02_activities/data/samplist.txt
+# echo "0 A2001" >> ./02_activities/data/samplist.txt
+# echo "2 A2003" >> ./02_activities/data/samplist.txt
+# echo "5 A2006" >> ./02_activities/data/samplist.txt
 
 ```
 
@@ -166,6 +166,7 @@ plink2 --bfile ./02_activities/data/gwa.qc \
       --extract ./02_activities/data/snplist.txt \
       --recode A \
       --out ./02_activities/data/geno.additive
+
 # --keep ./02_activities/data/samplist.txt can be used to extract a specific list of samples
 ```
 
@@ -190,14 +191,16 @@ bim_all<- fread("./02_activities/data/gwa.qc.bim")
 M <- nrow(bim_all);M
 
 indx.SNP=which((bim_all$V2)%in%c('rs1525873','rs2902663','rs343376','rs3813199'))
-
+#print(indx.SNP)
 geno_mat<- readPlinkToMatrixByIndex('./02_activities/data/gwa.qc', 1:N, indx.SNP)
-
+dim(geno_mat)
+head(geno_mat)
 ```
 
 ##### R functions to calculate the allele frequency.
 
 ```{r,message=FALSE, warning=FALSE}
+geno_mat[geno_mat==-9]=NA
 # Compute allele frequencies for each SNP (column), ignoring NAs
 allele_freq <- apply(geno_mat, 2, function(x) {
   sum(x, na.rm = TRUE) / (2 * sum(!is.na(x)))
@@ -227,8 +230,6 @@ hwe_pvalue <- function(geno_vector) {
     return(result)
   }
 }
-
-geno_mat[geno_mat==-9]=NA
 # Apply to all 4 SNPs (columns of the matrix)
 hwe_pvalues <- apply(geno_mat, 2, hwe_pvalue)
 
@@ -262,30 +263,44 @@ table(geno_subset$rs1525873_T)
 
 ```{r,message=FALSE, warning=FALSE}
 # Make prediction over continuous range (for smooth curve)
+# Create a new data frame containing a sequence of genotype values
  geno_range <- data.frame(
    rs1525873_T = seq(0, 2, length.out = 100)
  )
+# Use the fitted logistic regression model to predict phenotype probability
+# for each genotype value in geno_range
  geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
 
-
+# Start from the observed genotype dataset
 count_data <- geno_subset %>%
+# Round phenotype values to the nearest integer (for binary phenotype: 0 or 1)
   mutate(PHENOTYPE = round(PHENOTYPE)) %>%  
+# Remove rows with missing genotype or missing phenotype
   filter(!is.na(rs1525873_T), !is.na(PHENOTYPE)) %>%
+ # Group data by genotype value and phenotype category 
   group_by(rs1525873_T, PHENOTYPE) %>%
+# Count how many observations fall into each genotype-phenotype combination
   summarise(count = n(), .groups = "drop")
 
-ggplot() +
+# Start building the plot
+p1=ggplot() +
+# Add points showing observed genotype-phenotype combinations
   geom_point(
+    # Use the summarized count_data for the points
     data = count_data,
+    # Map genotype to x-axis, phenotype to y-axis, and count to point size
     aes(x = rs1525873_T, y = PHENOTYPE, size = count),
     color = "blue"
   ) +
-  geom_line(
+  # Add a regression line showing predicted probability across genotype values
+  geom_line(# Use the prediction data frame for the line
     data = geno_range,
     aes(x = rs1525873_T, y = predicted_prob),
     color = "red",
+    # Set line thickness
     size = 1.2
   ) +
+  # Control the size range of the points
   scale_size_continuous(range = c(2, 10)) +
   labs(
     title = "Logistic Regression: PHENOTYPE ~ Genotype",
@@ -293,11 +308,17 @@ ggplot() +
     y = "Phenotype ",
     size = "Count"
   ) +
+  # Restrict the visible x- and y-axis range
   coord_cartesian(xlim = c(-0.5, 2.5), ylim = c(-0.1, 1.1)) +
+   # Apply a minimal theme for a clean appearance
   theme_minimal()
+
+print(p1)
+#ggsave("./02_activities/data/p1_plot.png", plot = p1, width = 7, height = 5, dpi = 300)
+
 ```
 
-**Interpretation**: We performed logistic regression to test the association between genotype (rs1525873_T) and the binary phenotype. The regression coefficient for rs1525873_T is 0.14749 (p = 0.00476), indicating that each additional copy of the T allele is associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
+**Interpretation**: We performed logistic regression to test the association between genotype (rs1525873) and the binary phenotype. The regression coefficient for rs1525873 is 1.93140 (p <2e-16), indicating that each additional copy of the T allele is associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
 
 In practice, when testing genetic associations, we include additional covariates in the model, such as age, sex, and principal components to adjust for confounding effects. We will cover this in more detail later in the course.
 
@@ -306,7 +327,10 @@ In practice, when testing genetic associations, we include additional covariates
 ##### Dominance coding
 
 ```{r}
+# Create a new data frame geno_subset_dom as a copy of geno_subset
 geno_subset_dom <- geno_subset  
+
+# Convert genotype values in columns 7 to the last column into dominant coding
 geno_subset_dom[, 7:ncol(geno_subset_dom)] <- as.data.frame(
   lapply(geno_subset[, 7:ncol(geno_subset)], function(x) ifelse(x > 0, 1, 0))
 )
@@ -338,7 +362,7 @@ count_data <- geno_subset_dom %>%
 
 print(count_data)
 
-ggplot() +
+p2=ggplot() +
   geom_point(
     data = count_data,
     aes(x = rs1525873_T, y = PHENOTYPE, size = count),
@@ -359,9 +383,12 @@ ggplot() +
   ) +
   coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(-0.1, 1.1)) +
   theme_minimal()
+
+print(p2)
+#ggsave("./02_activities/data/p2_plot.png", plot = p2, width = 7, height = 5, dpi = 300)
 ```
 
-**Interpretation**: In the additive model, we see a clear dose-response relationship between genotype and disease risk: each additional copy of the risk allele increases the log-odds of being a case, as reflected in the significant and positive regression coefficient (\~2.0). By contrast, the dominance model treats any presence of the risk allele (Aa or AA) the same, leading to a steeper estimated effect (\~2.98). The AIC is higher under the dominance model (AIC=3663.2), indicating the additive model (AIC=3206.8) may fit slightly better overall by capturing a more gradual allele-dose effect.
+**Interpretation**: In the additive model, we see a clear dose-response relationship between genotype and disease risk: each additional copy of the risk allele increases the log-odds of being a case, as reflected in the significant and positive regression coefficient (\~1.93). By contrast, the dominance model treats any presence of the risk allele (Aa or AA) the same, leading to a steeper estimated effect (\~2.76). The AIC is higher under the dominance model (AIC=3705.6), indicating the additive model (AIC=3250.2) may fit slightly better overall by capturing a more gradual allele-dose effect.
 
 ##### Recessive Coding:
 
@@ -382,7 +409,6 @@ geno_range <- data.frame(
  )
  geno_range$predicted_prob <- predict(model, newdata = geno_range, type = "response")
 
-
 count_data <- geno_subset_dom %>%
   mutate(PHENOTYPE = round(PHENOTYPE)) %>%
   filter(!is.na(rs1525873_T), !is.na(PHENOTYPE)) %>%
@@ -391,7 +417,7 @@ count_data <- geno_subset_dom %>%
 
 print(count_data)
 
-ggplot() +
+p3=ggplot() +
   geom_point(
     data = count_data,
     aes(x = rs1525873_T, y = PHENOTYPE, size = count),
@@ -412,8 +438,11 @@ ggplot() +
   ) +
   coord_cartesian(xlim = c(-0.5, 1.5), ylim = c(-0.1, 1.1)) +
   theme_minimal()
+
+print(p3)
+#ggsave("./02_activities/data/p3_plot.png", plot = p3, width = 7, height = 5, dpi = 300)
 ```
 
-**Interpretation**: In the recessive model, the predicted risk when genotype = 0 is higher than under the dominance model,when genotype = 0 includes both aa and Aa individuals. This means the average risk for genotype=0 in the recessive model includes some risk from heterozygotes (Aa), pushing the predicted probability higher than if it were only aa. The AIC of 3400.7 indicates that the additive model offers the best overall fit, consistent with the interpretation that heterozygotes (Aa) confer intermediate risk relative to aa.
+**Interpretation**: In the recessive model, the predicted risk when genotype = 0 is higher than under the dominance model,when genotype = 0 includes both aa and Aa individuals. This means the average risk for genotype=0 in the recessive model includes some risk from heterozygotes (Aa), pushing the predicted probability higher than if it were only aa. The AIC (AIC=−2log(L)+2k) of 3412.1 indicates that the additive model offers the best overall fit, consistent with the interpretation that heterozygotes (Aa) confer intermediate risk relative to aa.
 
 In practice, the choice of genotype coding depends on biological hypotheses about the mode of inheritance and the statistical fit of different models. Researchers typically start with additive coding as the primary analysis, and may perform sensitivity analyses with dominance and recessive codings.
