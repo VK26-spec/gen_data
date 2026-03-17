@@ -5,6 +5,14 @@ format: html
 
 You will need **PLINK2** installed and available in your PATH. Please follow the OS-specific setup guide in [`SETUP.md`](../../SETUP.md). The dataset for this assignment consists of the following binary PLINK files: `gwa.A2.bed`, `gwa.A2.bim`, `gwa.A2.fam` , available at the following Google Drive link: <https://drive.google.com/drive/folders/1rHoy3z52Yyj985ukjjtLhfIBxchpyYtZ?usp=drive_link>. Please download all three files and save them in `02_activities/data/`.
 
+```{r setup, include=FALSE}
+# Input files are expected in ./02_activities/data/.
+#knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = normalizePath("../../"))
+library(data.table)
+library(qqman)
+```
+
 #### Question 1: Data inspection
 
 Before you run any models, first get familiar with the dataset. You may find `data.table::fread()` in R helpful for reading `.bim` and `.fam` files.
