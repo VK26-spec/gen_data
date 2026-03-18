@@ -134,7 +134,7 @@ summary(model)
 (ii) How would you interpret the beta coefficient from this regression?
 
 ```         
-The regression coefficient for rs1861 is 0.96698 (p <2e-16). This indicates that each additional copy of the C allele is almost 1 to 1 linearly associated with increased odds of the expected phenotype. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
+The regression coefficient for rs1861 is 0.97382 (p <2e-16). This indicates that each additional copy of the C allele is almost 1 to 1 linearly associated with increased odds of the expected phenotype. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
 
 ```
 
@@ -226,7 +226,7 @@ ggsave("./02_activities/data/p2_plot.png", plot = p2, width = 7, height = 5, dpi
 (vii) Which model fits better? Justify your answer.
 
 ```         
-The AIC is 11292 for the recessive model and 11277 for the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
+The AIC is 11292 for the recessive model and 11277 for the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit as the AIC is slightly lower.
 ```
 
 ### Criteria
