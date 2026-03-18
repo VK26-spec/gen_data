@@ -13,11 +13,12 @@ We will go through comparable code and concepts in the live learning session. If
 Please bring questions that you cannot work out on your own to office hours, work periods or share with your peers on Slack. We will work with you through the issue.
 
 You will need to install PLINK and run the analyses. Please follow the OS-specific setup guide in [`SETUP.md`](../../SETUP.md). PLINK is a free, open-source whole genome association analysis toolset, designed to perform a range of basic, large-scale analyses in a computationally efficient manner.
-```{r, setup, include=FALSE}
+
+```{r setup, include=FALSE}
 # Set up a consistent path for all chunks of code
-knitr::opts_knit$set(root.dir = normalizePath("../../../"))
-getwd()
+knitr::opts_knit$set(root.dir = normalizePath("../../"))
 ```
+
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 library(data.table)
 library(ggplot2)
@@ -32,21 +33,21 @@ Before fitting any models, it is essential to understand the data. Use R or bash
 (i) Read the .fam file. How many samples does the dataset contain?
 
 ```{bash}         
-wc -l < ./gen_data/02_activities/data/gwa.qc.A1.fam
+wc -l < ./02_activities/data/gwa.qc.A1.fam
 #The number of samples is 4000.
 ```
 
 (ii) What is the 'variable type' of the response variable (i.e.Continuous or binary)?
 
 ``` {bash}    
-head ./gen_data/02_activities/data/gwa.qc.A1.fam
+head ./02_activities/data/gwa.qc.A1.fam
 # The variable type is continuous.
 ```
 
 (iii) Read the .bim file. How many SNPs does the dataset contain?
 
 ```{bash}         
-wc -l < ./gen_data/02_activities/data/gwa.qc.A1.bim
+wc -l < ./02_activities/data/gwa.qc.A1.bim
 # The number of SNPs in the dataset is 101083
 ```
 
@@ -55,14 +56,14 @@ wc -l < ./gen_data/02_activities/data/gwa.qc.A1.bim
 (i) Load the genotype matrix for SNPs rs1861, rs3813199, rs3128342, and rs11804831 using additive coding. What are the allele frequencies (AFs) for these four SNPs?
 
 ```{bash} 
-printf "%s\n" rs1861 rs3813199 rs3128342 rs11804831 > ./gen_data/02_activities/data/snplist.txt
+printf "%s\n" rs1861 rs3813199 rs3128342 rs11804831 > ./02_activities/data/snplist.txt
 
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --freq --out ./gen_data/02_activities/data/gwa_qc_A1_freq
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --out ./02_activities/data/gwa_qc_A1_freq
 
 ```
 ```{r,message=FALSE, warning=FALSE}
 library(data.table)
-freq <- fread("gen_data/02_activities/data/gwa_qc_A1_freq.afreq")  # columns include FID, IID, and SNP genotype
+freq <- fread("02_activities/data/gwa_qc_A1_freq.afreq")  # columns include FID, IID, and SNP genotype
 head(freq)
 #rs3813199 alt AF is 0.0569126. The ref AF is 0.943087.
 #rs11804831 AF is 0.154341. The ref AF is 0.845659.
@@ -73,10 +74,10 @@ head(freq)
 (ii) What are the minor allele frequencies (MAFs) for these four SNPs?
 
 ```{bash}       
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --freq --maf 0.5 --out ./gen_data/02_activities/data/gwa_qc_A1_maf
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --freq --maf 0.5 --out ./02_activities/data/gwa_qc_A1_maf
 ```
 ```{r,message=FALSE, warning=FALSE}
-freq <- fread("gen_data/02_activities/data/gwa_qc_A1_maf.afreq")
+freq <- fread("02_activities/data/gwa_qc_A1_maf.afreq")
 head(freq)
 
 #rs3813199 MAF is 0.0569126
@@ -90,19 +91,19 @@ head(freq)
 (i) Conduct the Hardy–Weinberg Equilibrium (HWE) test for all SNPs in the .bim file. Then, load the file containing the HWE p-value results and display the first few rows of the resulting data frame.
 
 ```{bash}         
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --hardy --out ./gen_data/02_activities/data/gwa_qc_A1_hwe
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --hardy --out ./02_activities/data/gwa_qc_A1_hwe
 ```
 ```{r,message=FALSE, warning=FALSE}
 # View HWE results
-hwe <- fread("gen_data/02_activities/data/gwa_qc_A1_hwe.hardy")
+hwe <- fread("02_activities/data/gwa_qc_A1_hwe.hardy")
 head(hwe)
 ```
 
 (ii) What are the HWE p-values for SNPs rs1861, rs3813199, rs3128342, and rs11804831?
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --hardy --out ./gen_data/02_activities/data/gwa_qc_A1_subset_hwe
-head ./gen_data/02_activities/data/gwa_qc_A1_subset_hwe.hardy
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --hardy --out ./02_activities/data/gwa_qc_A1_subset_hwe
+head ./02_activities/data/gwa_qc_A1_subset_hwe.hardy
 
 #rs3813199 p-value is 1
 #rs11804831 p-value is 0.113354
@@ -114,13 +115,12 @@ head ./gen_data/02_activities/data/gwa_qc_A1_subset_hwe.hardy
 
 (i) Conduct a linear regression to test the association between SNP rs1861 and the phenotype. What is the p-value?
 ```{bash}       
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A1 --extract ./gen_data/02_activities/data/snplist.txt --recode A --out ./gen_data/02_activities/data/geno.additive
+plink2 --bfile ./02_activities/data/gwa.qc.A1 --extract ./02_activities/data/snplist.txt --recode A --out ./02_activities/data/geno.additive
 ```
 ```{r,message=FALSE, warning=FALSE}
 # Load genotype data
-geno_subset <- fread("gen_data/02_activities/data/geno.additive.raw")
-geno_subset=na.omit(geno_subset)
-geno_subset[geno_subset$ID=='rs1861',]
+geno_subset <- fread("02_activities/data/geno.additive.raw")
+geno_subset=geno_subset[!is.na(geno_subset$rs1861_C),]
 # Fit logistic regression model
 model <- glm(PHENOTYPE ~ rs1861_C, data = geno_subset, family = "gaussian")
 
@@ -172,7 +172,7 @@ p1=ggplot(geno_subset, aes(x= rs1861_C, y = PHENOTYPE)) +
   theme_minimal()
 
 print(p1)
-ggsave("gen_data/02_activities/data/p1_plot.png", plot = p1, width = 7, height = 5, dpi = 300)
+ggsave("02_activities/data/p1_plot.png", plot = p1, width = 7, height = 5, dpi = 300)
 ```
 
 (iv) Convert the genotype coding for rs1861 to recessive coding.
@@ -220,13 +220,13 @@ p2=ggplot(geno_subset_rec, aes(x = rs1861_C, y = PHENOTYPE)) +
   theme_minimal()
 
 print(p2)
-ggsave("./gen_data/02_activities/data/p2_plot.png", plot = p2, width = 7, height = 5, dpi = 300)
+ggsave("./02_activities/data/p2_plot.png", plot = p2, width = 7, height = 5, dpi = 300)
 ```
 
 (vii) Which model fits better? Justify your answer.
 
 ```         
-The AIC is 11000 for the recessive model and 10988 for the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
+The AIC is 11292 for the recessive model and 11277 for the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
 ```
 
 ### Criteria
