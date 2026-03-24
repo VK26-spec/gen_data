@@ -11,6 +11,7 @@ You will need **PLINK2** installed and available in your PATH. Please follow the
 knitr::opts_knit$set(root.dir = normalizePath("../../"))
 library(data.table)
 library(qqman)
+library(ggplot2)
 ```
 
 #### Question 1: Data inspection
@@ -20,21 +21,28 @@ Before you run any models, first get familiar with the dataset. You may find `da
 (i) Read the `.fam` file. How many samples does the dataset contain?
 
 ```{r}
-data.table::fread("gen_data/02_activities/data/gwa.A2.fam")
+pheno<-data.table::fread("gen_data/02_activities/data/gwa.A2.fam")
+print(pheno)
 #4000 samples
 ```
 
 (ii) Read the `.bim` file. How many SNPs does the dataset contain?
 
 ```{r}
-data.table::fread("gen_data/02_activities/data/gwa.A2.bim")
+gen<-data.table::fread("gen_data/02_activities/data/gwa.A2.bim")
+print(gen)
 #306102 SNPs
 ```
 
 (iii) Make a histogram (or density plot) of the phenotype. Does it look roughly Gaussian?
 
 ```{r}
-# Your code here...
+p3<-ggplot(pheno, aes(x = V6)) +
+geom_density(fill="green", color="black")+
+labs(x="Phenotype", y="Density")
+#Yes, it looks roughly Gaussian
+
+ggsave("gen_data/02_activities/data/p3_plot.png", plot = p3, width = 7, height = 5, dpi = 300)
 ```
 
 #### Question 2: Quality control (QC)
@@ -102,7 +110,25 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --ci 0.95 --linear --cova
 (ii) Create a Manhattan plot of the GWAS results.
 
 ```{r}
-# Your code here...
+assoc <- data.table::fread("gen_data/02_activities/data/gwa.qc_assoc.A2.PHENO1.glm.linear")
+
+assoc_add <- assoc[TEST == "ADD"]
+
+setnames(assoc_add, c("#CHROM","POS","ID"), c("CHR","BP","SNP"))
+
+# Manhattan plot
+p4<-manhattan(assoc_add,
+          chr = "CHR",
+          bp  = "BP",
+          snp = "SNP",
+          p   = "P",
+          xlab = "",
+          ylab = "",
+          suggestiveline = FALSE,
+          cex.axis = 1.5,
+          col = c("lightblue", "lightslateblue"))
+
+ggsave("gen_data/02_activities/data/p4_plot.png", plot = p4, width = 7, height = 5, dpi = 300)
 ```
 
 (iii) Create a QQ plot of the GWAS p-values.
