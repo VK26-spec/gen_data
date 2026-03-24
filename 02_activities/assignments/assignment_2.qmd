@@ -117,7 +117,7 @@ assoc_add <- assoc[TEST == "ADD"]
 setnames(assoc_add, c("#CHROM","POS","ID"), c("CHR","BP","SNP"))
 
 # Manhattan plot
-p4<-manhattan(assoc_add,
+manhattan(assoc_add,
           chr = "CHR",
           bp  = "BP",
           snp = "SNP",
@@ -127,14 +127,13 @@ p4<-manhattan(assoc_add,
           suggestiveline = FALSE,
           cex.axis = 1.5,
           col = c("lightblue", "lightslateblue"))
-
-ggsave("gen_data/02_activities/data/p4_plot.png", plot = p4, width = 7, height = 5, dpi = 300)
 ```
 
 (iii) Create a QQ plot of the GWAS p-values.
 
 ```{r}
-# Your code here...
+qq(assoc_add$P, main = "Q-Q plot of GWAS p-values")
+
 ```
 
 ### Criteria
