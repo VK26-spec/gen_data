@@ -62,13 +62,13 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --extract ./gen_data/02_a
 (ii) Use PLINK2 on the LD-pruned dataset to identify a set of unrelated individuals up to (approximately) 2nd-degree relatives (use a kinship cutoff of 0.0884).
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc_pruned.A2 --king-cutoff 0.0884 --out ./gen_data/02_activities/data/gwa_king.A2
 ```
 
 (iii) Using the unrelated individual list from part (ii), create a dataset containing only unrelated individuals and name it `gwa.qc_unrelated.A2`.
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --keep ./gen_data/02_activities/data/gwa_king.A2.king.cutoff.in.id --make-bed --out ./gen_data/02_activities/data/gwa.qc_unrelated.A2
 ```
 
 #### Question 4: principal component analysis (PCA)
@@ -78,7 +78,9 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --extract ./gen_data/02_a
     (Hint: Refer to the PCA section in the GWAS Tutorial II. You should use a `*.prune.in` file to select a set of independent SNPs before performing PCA.)
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc_unrelated.A2 --extract ./gen_data/02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./gen_data/02_activities/data/gwa.qc_unrelated_pruned.A2
+
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc_unrelated_pruned.A2 --pca 20 --out ./gen_data/02_activities/data/gwa_unrel_PCA.A2
 ```
 
 #### Question 5: GWAS analyses
