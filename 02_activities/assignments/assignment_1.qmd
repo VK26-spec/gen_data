@@ -226,7 +226,7 @@ ggsave("./gen_data/02_activities/data/p2_plot.png", plot = p2, width = 7, height
 (vii) Which model fits better? Justify your answer.
 
 ```         
-The AIC is 11000 under the recessive model and 10988 under the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
+The AIC is 11000 for the recessive model and 10988 for the additive model. This shows that while, the AICs are similar the additive model has a slightly better overall fit.
 ```
 
 ### Criteria

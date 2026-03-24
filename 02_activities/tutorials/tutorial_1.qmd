@@ -55,14 +55,14 @@ head ./02_activities/data/gwa.qc.fam
 head ./02_activities/data/gwa.qc.bim
 ```
 
-| **Column Name** | **Description** |
+| **Column Name** | **Description**                                           |
 |------------------------------------|------------------------------------|
-| **CHR** | Chromosome number |
-| **SNP** | SNP ID (e.g., rs number) |
-| **CM** | Genetic distance (usually 0) |
-| **BP** | Physical position in base pairs |
-| **A1** | PLINK's alternative allele |
-| **A2** | the other allele (reference allele; mostly major alleles) |
+| **CHR**         | Chromosome number                                         |
+| **SNP**         | SNP ID (e.g., rs number)                                  |
+| **CM**          | Genetic distance (usually 0)                              |
+| **BP**          | Physical position in base pairs                           |
+| **A1**          | PLINK's alternative allele                                |
+| **A2**          | the other allele (reference allele; mostly major alleles) |
 
 ### 3. Understanding the .bed file
 
@@ -318,7 +318,7 @@ print(p1)
 
 ```
 
-**Interpretation**: We performed logistic regression to test the association between genotype (rs1525873) and the binary phenotype. The regression coefficient for rs1525873 is 1.93140 (p <2e-16), indicating that each additional copy of the T allele is associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
+**Interpretation**: We performed logistic regression to test the association between genotype (rs1525873) and the binary phenotype. The regression coefficient for rs1525873 is 1.93140 (p \<2e-16), indicating that each additional copy of the T allele is associated with increased odds of being a case. The significant p-value suggests evidence of an association between this SNP and the phenotype in our sample.
 
 In practice, when testing genetic associations, we include additional covariates in the model, such as age, sex, and principal components to adjust for confounding effects. We will cover this in more detail later in the course.
 
