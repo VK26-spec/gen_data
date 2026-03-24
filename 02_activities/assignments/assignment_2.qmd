@@ -21,7 +21,7 @@ Before you run any models, first get familiar with the dataset. You may find `da
 (i) Read the `.fam` file. How many samples does the dataset contain?
 
 ```{r}
-pheno<-data.table::fread("gen_data/02_activities/data/gwa.A2.fam")
+pheno<-data.table::fread("02_activities/data/gwa.A2.fam")
 print(pheno)
 #4000 samples
 ```
@@ -29,7 +29,7 @@ print(pheno)
 (ii) Read the `.bim` file. How many SNPs does the dataset contain?
 
 ```{r}
-gen<-data.table::fread("gen_data/02_activities/data/gwa.A2.bim")
+gen<-data.table::fread("02_activities/data/gwa.A2.bim")
 print(gen)
 #306102 SNPs
 ```
@@ -42,7 +42,8 @@ geom_density(fill="green", color="black")+
 labs(x="Phenotype", y="Density")
 #Yes, it looks roughly Gaussian
 
-ggsave("gen_data/02_activities/data/p3_plot.png", plot = p3, width = 7, height = 5, dpi = 300)
+ggsave("02_activities/data/p3_plot.png", plot = p3, width = 7, height = 5, dpi = 300)
+print(p3)
 ```
 
 #### Question 2: Quality control (QC)
@@ -52,7 +53,7 @@ Now we will perform QC using PLINK2 for the genotype files in `gwa.A2`.
 (i) Using PLINK2 from the command line (bash), perform basic QC with the following filters: MAF ≥ 0.05, SNP missingness (`--geno`) ≤ 0.01, individual missingness (`--mind`) ≤ 0.10, and HWE p-value ≥ 0.00005, and output the QC’ed dataset as `gwa.qc.A2`.
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.A2 --maf 0.05 --geno 0.01 --mind 0.1 --hwe 0.00005 --make-bed --out ./gen_data/02_activities/data/gwa.qc.A2
+plink2 --bfile ./02_activities/data/gwa.A2 --maf 0.05 --geno 0.01 --mind 0.1 --hwe 0.00005 --make-bed --out ./02_activities/data/gwa.qc.A2
 ```
 
 #### Question 3: Relatedness
@@ -62,21 +63,21 @@ In this question, you will use **PLINK2’s built-in KING-robust kinship** (`--k
 (i)  Perform LD pruning on `gwa.qc.A2` using PLINK2 with the following parameters: `--indep-pairwise 500 50 0.05`, and then generate a new dataset containing only the pruned SNPs.
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --indep-pairwise 500 50 0.05 --out ./gen_data/02_activities/data/gwa.qc_pruned.A2
+plink2 --bfile ./02_activities/data/gwa.qc.A2 --indep-pairwise 500 50 0.05 --out ./02_activities/data/gwa.qc_pruned.A2
 
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --extract ./gen_data/02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./gen_data/02_activities/data/gwa.qc_pruned.A2
+plink2 --bfile ./02_activities/data/gwa.qc.A2 --extract ./02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./02_activities/data/gwa.qc_pruned.A2
 ```
 
 (ii) Use PLINK2 on the LD-pruned dataset to identify a set of unrelated individuals up to (approximately) 2nd-degree relatives (use a kinship cutoff of 0.0884).
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc_pruned.A2 --king-cutoff 0.0884 --out ./gen_data/02_activities/data/gwa_king.A2
+plink2 --bfile ./02_activities/data/gwa.qc_pruned.A2 --king-cutoff 0.0884 --out ./02_activities/data/gwa_king.A2
 ```
 
 (iii) Using the unrelated individual list from part (ii), create a dataset containing only unrelated individuals and name it `gwa.qc_unrelated.A2`.
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --keep ./gen_data/02_activities/data/gwa_king.A2.king.cutoff.in.id --make-bed --out ./gen_data/02_activities/data/gwa.qc_unrelated.A2
+plink2 --bfile ./02_activities/data/gwa.qc.A2 --keep ./02_activities/data/gwa_king.A2.king.cutoff.in.id --make-bed --out ./02_activities/data/gwa.qc_unrelated.A2
 ```
 
 #### Question 4: principal component analysis (PCA)
@@ -86,9 +87,9 @@ plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --keep ./gen_data/02_acti
     (Hint: Refer to the PCA section in the GWAS Tutorial II. You should use a `*.prune.in` file to select a set of independent SNPs before performing PCA.)
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc_unrelated.A2 --extract ./gen_data/02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./gen_data/02_activities/data/gwa.qc_unrelated_pruned.A2
+plink2 --bfile ./02_activities/data/gwa.qc_unrelated.A2 --extract ./02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./02_activities/data/gwa.qc_unrelated_pruned.A2
 
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc_unrelated_pruned.A2 --pca 20 --out ./gen_data/02_activities/data/gwa_unrel_PCA.A2
+plink2 --bfile ./02_activities/data/gwa.qc_unrelated_pruned.A2 --pca 20 --out ./02_activities/data/gwa_unrel_PCA.A2
 ```
 
 #### Question 5: GWAS analyses
@@ -104,13 +105,13 @@ Assume that:
 (i) Using PLINK2, run a linear regression GWAS using `gwa.qc_unrelated.A2` as the input dataset. Adjust for PCs 1–3 as covariates.
 
 ```{bash}
-plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --ci 0.95 --linear --covar ./gen_data/02_activities/data/gwa_unrel_PCA.A2.eigenvec --covar-name PC1,PC2,PC3 --adjust --out ./gen_data/02_activities/data/gwa.qc_assoc.A2
+plink2 --bfile ./02_activities/data/gwa.qc.A2 --ci 0.95 --linear --covar ./02_activities/data/gwa_unrel_PCA.A2.eigenvec --covar-name PC1,PC2,PC3 --adjust --out ./02_activities/data/gwa.qc_assoc.A2
 ```
 
 (ii) Create a Manhattan plot of the GWAS results.
 
 ```{r}
-assoc <- data.table::fread("gen_data/02_activities/data/gwa.qc_assoc.A2.PHENO1.glm.linear")
+assoc <- data.table::fread("02_activities/data/gwa.qc_assoc.A2.PHENO1.glm.linear")
 
 assoc_add <- assoc[TEST == "ADD"]
 
