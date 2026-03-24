@@ -44,17 +44,19 @@ Now we will perform QC using PLINK2 for the genotype files in `gwa.A2`.
 (i) Using PLINK2 from the command line (bash), perform basic QC with the following filters: MAF ≥ 0.05, SNP missingness (`--geno`) ≤ 0.01, individual missingness (`--mind`) ≤ 0.10, and HWE p-value ≥ 0.00005, and output the QC’ed dataset as `gwa.qc.A2`.
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.A2 --maf 0.05 --geno 0.01 --mind 0.1 --hwe 0.00005 --make-bed --out ./gen_data/02_activities/data/gwa.qc.A2
 ```
 
 #### Question 3: Relatedness
 
 In this question, you will use **PLINK2’s built-in KING-robust kinship** (`--king-cutoff`) detect and remove related individuals.
 
-i)  Perform LD pruning on `gwa.qc.A2` using PLINK2 with the following parameters: `--indep-pairwise 500 50 0.05`, and then generate a new dataset containing only the pruned SNPs.
+(i)  Perform LD pruning on `gwa.qc.A2` using PLINK2 with the following parameters: `--indep-pairwise 500 50 0.05`, and then generate a new dataset containing only the pruned SNPs.
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --indep-pairwise 500 50 0.05 --out ./gen_data/02_activities/data/gwa.qc_pruned.A2
+
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --extract ./gen_data/02_activities/data/gwa.qc_pruned.A2.prune.in --make-bed --out ./gen_data/02_activities/data/gwa.qc_pruned.A2
 ```
 
 (ii) Use PLINK2 on the LD-pruned dataset to identify a set of unrelated individuals up to (approximately) 2nd-degree relatives (use a kinship cutoff of 0.0884).
