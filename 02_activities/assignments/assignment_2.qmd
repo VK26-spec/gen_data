@@ -96,7 +96,7 @@ Assume that:
 (i) Using PLINK2, run a linear regression GWAS using `gwa.qc_unrelated.A2` as the input dataset. Adjust for PCs 1–3 as covariates.
 
 ```{bash}
-# Your code here...
+plink2 --bfile ./gen_data/02_activities/data/gwa.qc.A2 --ci 0.95 --linear --covar ./gen_data/02_activities/data/gwa_unrel_PCA.A2.eigenvec --covar-name PC1,PC2,PC3 --adjust --out ./gen_data/02_activities/data/gwa.qc_assoc.A2
 ```
 
 (ii) Create a Manhattan plot of the GWAS results.
