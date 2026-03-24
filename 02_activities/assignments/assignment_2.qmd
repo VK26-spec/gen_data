@@ -20,13 +20,15 @@ Before you run any models, first get familiar with the dataset. You may find `da
 (i) Read the `.fam` file. How many samples does the dataset contain?
 
 ```{r}
-# Your code here...
+data.table::fread("gen_data/02_activities/data/gwa.A2.fam")
+#4000 samples
 ```
 
 (ii) Read the `.bim` file. How many SNPs does the dataset contain?
 
 ```{r}
-# Your code here...
+data.table::fread("gen_data/02_activities/data/gwa.A2.bim")
+#306102 SNPs
 ```
 
 (iii) Make a histogram (or density plot) of the phenotype. Does it look roughly Gaussian?
